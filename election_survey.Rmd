@@ -1,0 +1,58 @@
+---
+title: "National Election Survey"
+author: "Molly Chiang"
+date: "11/14/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(googlesheets4)
+library(broom)
+library(tidyverse)
+
+sheets_deauth()
+```
+
+```{r load_data}
+
+election_data <- read_sheet("1QA_Xv9tAbKhwFdQpnVa2hTjhEdg5zAl4WY5EVanWSo0")
+
+```
+
+```{r dem_adv}
+
+model <- glm(dvote ~ dem_adv, data = election_data, family = binomial)
+
+election_data %>%
+  ggplot(aes(x = dem_adv, y = dvote)) +
+  geom_jitter(width = .1, height = .1, alpha = .07) +
+  geom_smooth(method = "glm", method.args = list(family = "binomial"), se = FALSE)
+
+model
+
+```
+
+This graph shows us that if you saw a democratic advertisement (dem_adv = 1), you are more likely to vote democrat (dvote = 1). There is a positive correlation between dem_adv and dvote with a slope of .2106.
+
+```{r female}
+
+model <- glm(dvote ~ female, data = election_data, family = binomial)
+
+print(model)
+summary(model)
+
+model %>% tidy()
+
+election_data %>%
+  ggplot(aes(x = female, y = dvote)) +
+  geom_jitter(width = .1, height = .1, alpha = .07) +
+  geom_smooth(method = "glm", method.args = list(family = "binomial"), se = FALSE)
+
+```
+
+
+
+
+
